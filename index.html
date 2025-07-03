@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chronicles of Celesthium</title>
+    
+    <!-- Google Fonts for the retro pixelated font -->
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <!-- NES.css for the 8-bit retro theme -->
+    <link href="https://unpkg.com/nes.css@latest/css/nes.min.css" rel="stylesheet" />
+
+    <style>
+        /* --- General Styles --- */
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background-color: #212529;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .game-container {
+            max-width: 900px;
+            width: 100%;
+        }
+        
+        .game-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #f7d51d;
+            text-shadow: 3px 3px #e53935;
+        }
+
+        /* --- Game Window & Displays --- */
+        .text-display-container {
+            min-height: 250px;
+            padding: 1.5rem;
+            overflow-y: auto;
+            margin-bottom: 1.5rem;
+        }
+        
+        .text-display-container p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        
+        /* --- Text Animation --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out forwards;
+        }
+
+        /* --- Character Selection --- */
+        #character-select-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem;
+        }
+
+        .character-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s ease-out;
+        }
+
+        .character-card:hover {
+            transform: scale(1.1);
+            color: #f7d51d; /* Highlight color on hover */
+        }
+
+        .character-card .nes-container {
+            padding: 0.25rem;
+            margin-bottom: 0.75rem;
+            image-rendering: pixelated; /* Ensures images look sharp and pixelated */
+            background-color: #000;
+        }
+        
+        .character-card img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .character-card-name {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        /* --- Player Stats --- */
+        .player-stats-container {
+            margin-top: 2rem;
+            padding: 1rem;
+        }
+        
+        .player-stats-container .lists {
+            background: transparent;
+            padding-left: 0;
+        }
+        
+        .player-stats-container .lists li::before {
+             content: ">";
+        }
+
+        /* --- Utility --- */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1 class="game-title">Chronicles of Celesthium</h1>
+
+        <!-- Main Game Window -->
+        <div id="game-window" class="nes-container with-title is-centered is-dark">
+            <p id="window-title" class="title">Select Your Champion</p>
+            
+            <!-- Character Selection Screen -->
+            <div id="character-select-grid">
+                <!-- Character cards will be injected here -->
+            </div>
+            
+            <!-- Story Screen (initially hidden) -->
+            <div id="story-screen" class="hidden">
+                <div id="text-display" class="text-display-container"></div>
+                <div id="choices-display" class="choices-container"></div>
+            </div>
+        </div>
+        
+        <!-- Player Status Window -->
+        <div id="player-stats" class="nes-container with-title is-dark">
+             <p class="title">Status</p>
+             <div class="lists">
+                 <ul class="nes-list is-circle">
+                    <li id="stat-name">Name: ???</li>
+                    <li id="stat-hp">HP: --/--</li>
+                    <li id="stat-affinity">Affinity: Unknown</li>
+                 </ul>
+             </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DOM ELEMENTS ---
+        const gameWindow = document.getElementById('game-window');
+        const windowTitle = document.getElementById('window-title');
+        const characterSelectGrid = document.getElementById('character-select-grid');
+        const storyScreen = document.getElementById('story-screen');
+        const textDisplay = document.getElementById('text-display');
+        const choicesDisplay = document.getElementById('choices-display');
+        
+        const statName = document.getElementById('stat-name');
+        const statHp = document.getElementById('stat-hp');
+        const statAffinity = document.getElementById('stat-affinity');
+
+        // --- PLAYER STATE ---
+        let player = {
+            name: '???',
+            hp: 100,
+            maxHp: 100,
+            affinity: 'Unknown',
+        };
+        
+        // --- CHARACTER DATA ---
+        // Storing character info here makes it easy to manage.
+        // Make sure the image paths match your folder structure.
+        const characters = [
+            { id: 'kael', name: 'Kael Vortex', img: 'images/Kael_Vortex.png', affinity: 'Temporal' },
+            { id: 'nyra', name: 'Nyra Khaine', img: 'images/Nyra_Khaine.png', affinity: 'Redemption' },
+            { id: 'riko', name: 'Riko Blaze', img: 'images/Riko_Blaze.png', affinity: 'Neon Fury' },
+            { id: 'echo', name: 'Echo Rune', img: 'images/Echo_Rune.png', affinity: 'Sonic' },
+            { id: 'shoryu', name: 'Shoryu Hayabusa', img: 'images/Shoryu_Hayabusa.png', affinity: 'Elemental' },
+            { id: 'kaen', name: 'Kaen Ryuji', img: 'images/Kaen_Ryuji.png', affinity: 'Rage' },
+            { id: 'thorn', name: 'Thorn Howl', img: 'images/Thorn_Howl.png', affinity: 'Savage' },
+            { id: 'yorikai', name: 'Yorikai', img: 'images/Yorikai.png', affinity: 'Forgotten' },
+            { id: 'mei', name: 'Mei Soryana', img: 'images/Mei_Soryana.png', affinity: 'Thunder' },
+            { id: 'hana', name: 'Hana Kurei', img: 'images/Hana_Kurei.png', affinity: 'Psychic' },
+            { id: 'lira', name: 'Lira Valeska', img: 'images/Lira_Valeska.png', affinity: 'Kinetic' },
+        ];
+
+        // --- STORY STRUCTURE ---
+        const story = {
+            start: {
+                text: `A blinding flash of temporal energy subsides, leaving you disoriented on the cool, metallic floor of Obris Sanctum. A figure in the pristine robes of the Celestial Accord rushes to your side. "By the Prime Celestians! Another one..." they murmur. "Welcome, {playerName}. I know this is confusing, but you are a pivotal piece in a war you don't yet understand. Your journey begins now."`,
+                choices: [
+                    { text: "Ask where you are.", destination: 'ask_location' },
+                    { text: "Ask who they are.", destination: 'ask_identity' }
+                ]
+            },
+            ask_location: {
+                text: `"This is Obris Sanctum, the rebuilt capital of the Sovereign Rings. It is a nexus between realms and the last bastion of the Celestial Accord against The Unmaker," the robed figure explains. "We have much to do."`,
+                choices: [
+                    { text: "Prepare for what's next.", destination: 'to_be_continued' }
+                ]
+            },
+            ask_identity: {
+                text: `"I am a Loremaster of the Celestial Accord. We are a resistance of warriors and scholars dedicated to preserving reality from the chaos The Unmaker spreads," she says, her voice firm. "And you, {playerName}, are one of the few who can fight it."`,
+                choices: [
+                    { text: "Prepare for what's next.", destination: 'to_be_continued' }
+                ]
+            },
+            to_be_continued: {
+                text: `Your path is set. The Chronicles of Celesthium have found their hero. The real battle is about to begin. (To be continued...)`,
+                choices: [
+                    { text: "Restart", destination: 'restart_game' }
+                ]
+            }
+        };
+
+        // --- GAME LOGIC ---
+
+        /**
+         * Populates the character selection screen.
+         */
+        function showCharacterSelection() {
+            characterSelectGrid.innerHTML = ''; // Clear previous grid
+            characters.forEach(char => {
+                const card = document.createElement('div');
+                card.className = 'character-card';
+                card.innerHTML = `
+                    <div class="nes-container is-dark with-title">
+                        <img src="${char.img}" alt="${char.name}">
+                    </div>
+                    <p class="character-card-name">${char.name}</p>
+                `;
+                card.addEventListener('click', () => selectCharacter(char));
+                characterSelectGrid.appendChild(card);
+            });
+        }
+        
+        /**
+         * Handles the player selecting a character.
+         * @param {object} characterData - The data object for the chosen character.
+         */
+        function selectCharacter(characterData) {
+            // Update player state
+            player.name = characterData.name;
+            player.affinity = characterData.affinity;
+            updateStats();
+            
+            // Switch from character select view to story view
+            characterSelectGrid.classList.add('hidden');
+            storyScreen.classList.remove('hidden');
+            
+            // Start the story
+            showStoryNode('start');
+        }
+
+        /**
+         * Displays a story node with a fade-in animation.
+         * @param {string} storyNodeKey - The key for the story node to display.
+         */
+        function showStoryNode(storyNodeKey) {
+            if (storyNodeKey === 'restart_game') {
+                location.reload(); // Simple way to restart
+                return;
+            }
+        
+            const storyNode = story[storyNodeKey];
+            
+            // Update window title based on player's location (can be expanded later)
+            windowTitle.innerText = "Obris Sanctum";
+
+            // Replace placeholder with player name
+            const storyText = storyNode.text.replace('{playerName}', player.name);
+
+            // Apply fade-in animation
+            textDisplay.innerHTML = `<p class="fade-in">${storyText}</p>`;
+
+            // Clear and create choice buttons
+            choicesDisplay.innerHTML = '';
+            storyNode.choices.forEach(choice => {
+                const button = document.createElement('button');
+                button.classList.add('nes-btn', 'is-primary');
+                button.innerText = choice.text;
+                button.addEventListener('click', () => selectChoice(choice));
+                choicesDisplay.appendChild(button);
+            });
+        }
+        
+        /**
+         * Handles the player selecting a choice.
+         * @param {object} choice - The choice object that was clicked.
+         */
+        function selectChoice(choice) {
+            showStoryNode(choice.destination);
+        }
+
+        /**
+         * Updates the player status display.
+         */
+        function updateStats() {
+            statName.innerText = `Name: ${player.name}`;
+            statHp.innerText = `HP: ${player.hp}/${player.maxHp}`;
+            statAffinity.innerText = `Affinity: ${player.affinity}`;
+        }
+
+        // --- INITIALIZE GAME ---
+        window.onload = () => {
+            showCharacterSelection();
+            updateStats(); // Initial stat display
+        };
+    </script>
+</body>
+</html>
