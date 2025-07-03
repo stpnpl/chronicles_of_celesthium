@@ -5,10 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chronicles of Celesthium</title>
     
-    <!-- Google Fonts for the retro pixelated font -->
     <link href="https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap" rel="stylesheet">
-    
-    <!-- NES.css for the 8-bit retro theme -->
     <link href="https://unpkg.com/nes.css@latest/css/nes.min.css" rel="stylesheet" />
 
     <style>
@@ -36,11 +33,10 @@
             text-shadow: 3px 3px #e53935;
         }
 
-        /* --- Game Window & Displays --- */
+        /* --- Screens & Displays --- */
         .text-display-container {
             min-height: 250px;
             padding: 1.5rem;
-            overflow-y: auto;
             margin-bottom: 1.5rem;
         }
         
@@ -48,8 +44,7 @@
             margin-bottom: 1rem;
             line-height: 1.6;
         }
-        
-        /* --- Text Animation --- */
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -57,6 +52,24 @@
 
         .fade-in {
             animation: fadeIn 0.8s ease-in-out forwards;
+        }
+        
+        @keyframes screenShake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        .shake {
+            animation: screenShake 0.5s;
         }
 
         /* --- Character Selection --- */
@@ -78,46 +91,34 @@
 
         .character-card:hover {
             transform: scale(1.1);
-            color: #f7d51d; /* Highlight color on hover */
+            color: #f7d51d;
         }
 
         .character-card .nes-container {
             padding: 0.25rem;
             margin-bottom: 0.75rem;
-            image-rendering: pixelated; /* Ensures images look sharp and pixelated */
+            image-rendering: pixelated;
             background-color: #000;
         }
         
-        .character-card img {
-            display: block;
-            width: 100%;
-            height: auto;
-        }
+        .character-card img { display: block; width: 100%; height: auto; }
+        .character-card-name { font-size: 0.8rem; text-transform: uppercase; }
 
-        .character-card-name {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-        }
+        /* --- Combat Screen --- */
+        #combat-screen { padding: 1rem; }
+        #enemy-display { text-align: center; margin-bottom: 1.5rem; }
+        #enemy-name { font-size: 1.2rem; margin-bottom: 0.5rem; color: #e53935; }
+        #player-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+        #combat-log { height: 100px; overflow-y: scroll; background-color: #343a40; padding: 0.5rem; border: 4px solid #fff; }
+        #combat-log p { margin: 0 0 0.5rem 0; font-size: 0.8rem; }
 
-        /* --- Player Stats --- */
-        .player-stats-container {
-            margin-top: 2rem;
-            padding: 1rem;
-        }
-        
-        .player-stats-container .lists {
-            background: transparent;
-            padding-left: 0;
-        }
-        
-        .player-stats-container .lists li::before {
-             content: ">";
-        }
+        /* --- Player & Enemy Stats --- */
+        .stats-container .lists { background: transparent; padding-left: 0; }
+        .stats-container .lists li::before { content: ">"; }
+        .progress-bar-label { margin-bottom: 0.5rem; }
 
         /* --- Utility --- */
-        .hidden {
-            display: none;
-        }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
@@ -129,191 +130,298 @@
         <div id="game-window" class="nes-container with-title is-centered is-dark">
             <p id="window-title" class="title">Select Your Champion</p>
             
-            <!-- Character Selection Screen -->
-            <div id="character-select-grid">
-                <!-- Character cards will be injected here -->
-            </div>
+            <div id="character-select-grid"></div>
             
-            <!-- Story Screen (initially hidden) -->
             <div id="story-screen" class="hidden">
                 <div id="text-display" class="text-display-container"></div>
                 <div id="choices-display" class="choices-container"></div>
             </div>
+
+            <div id="combat-screen" class="hidden">
+                <div id="enemy-display">
+                    <h3 id="enemy-name"></h3>
+                    <label for="enemy-hp-bar">HP</label>
+                    <progress id="enemy-hp-bar" class="nes-progress is-error" value="100" max="100"></progress>
+                </div>
+                <div id="player-actions"></div>
+                <div class="nes-container is-dark is-rounded">
+                    <div id="combat-log"></div>
+                </div>
+            </div>
         </div>
         
         <!-- Player Status Window -->
-        <div id="player-stats" class="nes-container with-title is-dark">
+        <div id="player-stats" class="stats-container nes-container with-title is-dark">
              <p class="title">Status</p>
              <div class="lists">
                  <ul class="nes-list is-circle">
                     <li id="stat-name">Name: ???</li>
+                    <li id="stat-level">Level: 1</li>
                     <li id="stat-hp">HP: --/--</li>
-                    <li id="stat-affinity">Affinity: Unknown</li>
                  </ul>
              </div>
+             <label for="player-xp-bar">EXP</label>
+             <progress id="player-xp-bar" class="nes-progress is-primary" value="0" max="100"></progress>
         </div>
     </div>
 
     <script>
-        // --- DOM ELEMENTS ---
-        const gameWindow = document.getElementById('game-window');
-        const windowTitle = document.getElementById('window-title');
-        const characterSelectGrid = document.getElementById('character-select-grid');
-        const storyScreen = document.getElementById('story-screen');
-        const textDisplay = document.getElementById('text-display');
-        const choicesDisplay = document.getElementById('choices-display');
-        
-        const statName = document.getElementById('stat-name');
-        const statHp = document.getElementById('stat-hp');
-        const statAffinity = document.getElementById('stat-affinity');
+    // --- DOM ELEMENTS ---
+    const gameWindow = document.getElementById('game-window');
+    const windowTitle = document.getElementById('window-title');
+    const characterSelectGrid = document.getElementById('character-select-grid');
+    const storyScreen = document.getElementById('story-screen');
+    const combatScreen = document.getElementById('combat-screen');
+    const textDisplay = document.getElementById('text-display');
+    const choicesDisplay = document.getElementById('choices-display');
+    const playerActions = document.getElementById('player-actions');
+    const combatLog = document.getElementById('combat-log');
+    
+    // Player Stats
+    const statName = document.getElementById('stat-name');
+    const statLevel = document.getElementById('stat-level');
+    const statHp = document.getElementById('stat-hp');
+    const playerXpBar = document.getElementById('player-xp-bar');
+    
+    // Enemy Stats
+    const enemyName = document.getElementById('enemy-name');
+    const enemyHpBar = document.getElementById('enemy-hp-bar');
 
-        // --- PLAYER STATE ---
-        let player = {
-            name: '???',
-            hp: 100,
-            maxHp: 100,
-            affinity: 'Unknown',
+    // --- GAME STATE ---
+    let player = {};
+    let currentEnemy = {};
+    let enemyQueue = [];
+    let isPlayerTurn = true;
+
+    // --- CHARACTER & ENEMY DATA ---
+    const characters = {
+        kael: { name: 'Kael Vortex', img: 'images/Kael_Vortex.png', affinity: 'Temporal', hp: 100, attack: 10, skills: [
+            { name: 'Time Strike', damageMultiplier: 1.5, description: 'A quick strike that warps time.' },
+            { name: 'Stasis Pulse', damageMultiplier: 1.2, description: 'A burst of energy that slows the enemy.' }
+        ]},
+        nyra: { name: 'Nyra Khaine', img: 'images/Nyra_Khaine.png', affinity: 'Redemption', hp: 120, attack: 8, skills: [
+            { name: 'Blade of Judgment', damageMultiplier: 1.8, description: 'A powerful slash with a blessed blade.' },
+            { name: 'Vindicating Slash', damageMultiplier: 1.4, description: 'A swift cut that restores resolve.' }
+        ]},
+        // Add other characters here for future expansion
+        riko: { name: 'Riko Blaze', img: 'images/Riko_Blaze.png', affinity: 'Neon Fury', hp: 90, attack: 12, skills: [] },
+    };
+
+    const enemies = {
+        void_wretch: { name: 'Void Wretch', hp: 30, attack: 5, exp: 100 },
+        soul_reaver: { name: 'Soul Reaver', hp: 35, attack: 7, exp: 120 },
+        fractured_demon: { name: 'Fractured Demon', hp: 40, attack: 9, exp: 150 },
+        void_titan_boss: { name: 'Void Titan', hp: 80, attack: 12, exp: 200 }
+    };
+
+    // --- STORY & GAME FLOW ---
+    const story = {
+        start: {
+            text: `A blinding flash of temporal energy subsides... "Welcome, {playerName}. Your journey begins now."`,
+            choices: [ { text: "Prepare for what's next.", destination: 'start_combat_intro' } ]
+        },
+        start_combat_intro: {
+            text: `The Loremaster points to a shimmering rift in reality. "The Null Expanse bleeds into our world. Creatures are pouring through. You must be our first line of defense! Go!"`,
+            choices: [ { text: "Enter the rift.", action: () => startCombatSequence() } ]
+        },
+        game_won: {
+            text: `With the Void Titan defeated, the rift collapses. You have proven yourself a true champion of Celesthium. Your legend has just begun.`,
+            choices: [ { text: "Restart", action: () => location.reload() } ]
+        },
+        game_over: {
+            text: `You have fallen in battle. The darkness of the Void consumes you. But in the fractured timelines of Celesthium, death is not always the end.`,
+            choices: [ { text: "Try Again", action: () => location.reload() } ]
+        }
+    };
+
+    // --- INITIALIZATION ---
+    window.onload = () => {
+        showCharacterSelection();
+        updatePlayerStatsUI();
+    };
+
+    function showCharacterSelection() {
+        characterSelectGrid.innerHTML = '';
+        // Only show Kael and Nyra for now
+        ['kael', 'nyra'].forEach(key => {
+            const char = characters[key];
+            const card = document.createElement('div');
+            card.className = 'character-card';
+            card.innerHTML = `
+                <div class="nes-container is-dark with-title">
+                    <img src="${char.img}" alt="${char.name}">
+                </div>
+                <p class="character-card-name">${char.name}</p>
+            `;
+            card.addEventListener('click', () => selectCharacter(key));
+            characterSelectGrid.appendChild(card);
+        });
+    }
+
+    function selectCharacter(charKey) {
+        const charData = characters[charKey];
+        player = {
+            ...charData,
+            level: 1,
+            exp: 0,
+            maxExp: 100,
+            maxHp: charData.hp
         };
         
-        // --- CHARACTER DATA ---
-        // Storing character info here makes it easy to manage.
-        // Make sure the image paths match your folder structure.
-        const characters = [
-            { id: 'kael', name: 'Kael Vortex', img: 'images/Kael_Vortex.png', affinity: 'Temporal' },
-            { id: 'nyra', name: 'Nyra Khaine', img: 'images/Nyra_Khaine.png', affinity: 'Redemption' },
-            { id: 'riko', name: 'Riko Blaze', img: 'images/Riko_Blaze.png', affinity: 'Neon Fury' },
-            { id: 'echo', name: 'Echo Rune', img: 'images/Echo_Rune.png', affinity: 'Sonic' },
-            { id: 'shoryu', name: 'Shoryu Hayabusa', img: 'images/Shoryu_Hayabusa.png', affinity: 'Elemental' },
-            { id: 'kaen', name: 'Kaen Ryuji', img: 'images/Kaen_Ryuji.png', affinity: 'Rage' },
-            { id: 'thorn', name: 'Thorn Howl', img: 'images/Thorn_Howl.png', affinity: 'Savage' },
-            { id: 'yorikai', name: 'Yorikai', img: 'images/Yorikai.png', affinity: 'Forgotten' },
-            { id: 'mei', name: 'Mei Soryana', img: 'images/Mei_Soryana.png', affinity: 'Thunder' },
-            { id: 'hana', name: 'Hana Kurei', img: 'images/Hana_Kurei.png', affinity: 'Psychic' },
-            { id: 'lira', name: 'Lira Valeska', img: 'images/Lira_Valeska.png', affinity: 'Kinetic' },
-        ];
-
-        // --- STORY STRUCTURE ---
-        const story = {
-            start: {
-                text: `A blinding flash of temporal energy subsides, leaving you disoriented on the cool, metallic floor of Obris Sanctum. A figure in the pristine robes of the Celestial Accord rushes to your side. "By the Prime Celestians! Another one..." they murmur. "Welcome, {playerName}. I know this is confusing, but you are a pivotal piece in a war you don't yet understand. Your journey begins now."`,
-                choices: [
-                    { text: "Ask where you are.", destination: 'ask_location' },
-                    { text: "Ask who they are.", destination: 'ask_identity' }
-                ]
-            },
-            ask_location: {
-                text: `"This is Obris Sanctum, the rebuilt capital of the Sovereign Rings. It is a nexus between realms and the last bastion of the Celestial Accord against The Unmaker," the robed figure explains. "We have much to do."`,
-                choices: [
-                    { text: "Prepare for what's next.", destination: 'to_be_continued' }
-                ]
-            },
-            ask_identity: {
-                text: `"I am a Loremaster of the Celestial Accord. We are a resistance of warriors and scholars dedicated to preserving reality from the chaos The Unmaker spreads," she says, her voice firm. "And you, {playerName}, are one of the few who can fight it."`,
-                choices: [
-                    { text: "Prepare for what's next.", destination: 'to_be_continued' }
-                ]
-            },
-            to_be_continued: {
-                text: `Your path is set. The Chronicles of Celesthium have found their hero. The real battle is about to begin. (To be continued...)`,
-                choices: [
-                    { text: "Restart", destination: 'restart_game' }
-                ]
-            }
-        };
-
-        // --- GAME LOGIC ---
-
-        /**
-         * Populates the character selection screen.
-         */
-        function showCharacterSelection() {
-            characterSelectGrid.innerHTML = ''; // Clear previous grid
-            characters.forEach(char => {
-                const card = document.createElement('div');
-                card.className = 'character-card';
-                card.innerHTML = `
-                    <div class="nes-container is-dark with-title">
-                        <img src="${char.img}" alt="${char.name}">
-                    </div>
-                    <p class="character-card-name">${char.name}</p>
-                `;
-                card.addEventListener('click', () => selectCharacter(char));
-                characterSelectGrid.appendChild(card);
-            });
-        }
+        characterSelectGrid.classList.add('hidden');
+        storyScreen.classList.remove('hidden');
         
-        /**
-         * Handles the player selecting a character.
-         * @param {object} characterData - The data object for the chosen character.
-         */
-        function selectCharacter(characterData) {
-            // Update player state
-            player.name = characterData.name;
-            player.affinity = characterData.affinity;
-            updateStats();
-            
-            // Switch from character select view to story view
-            characterSelectGrid.classList.add('hidden');
-            storyScreen.classList.remove('hidden');
-            
-            // Start the story
-            showStoryNode('start');
-        }
+        showStoryNode('start');
+        updatePlayerStatsUI();
+    }
 
-        /**
-         * Displays a story node with a fade-in animation.
-         * @param {string} storyNodeKey - The key for the story node to display.
-         */
-        function showStoryNode(storyNodeKey) {
-            if (storyNodeKey === 'restart_game') {
-                location.reload(); // Simple way to restart
-                return;
-            }
-        
-            const storyNode = story[storyNodeKey];
-            
-            // Update window title based on player's location (can be expanded later)
-            windowTitle.innerText = "Obris Sanctum";
+    // --- STORY & UI MANAGEMENT ---
+    function showStoryNode(nodeKey) {
+        const storyNode = story[nodeKey];
+        const storyText = storyNode.text.replace('{playerName}', player.name);
 
-            // Replace placeholder with player name
-            const storyText = storyNode.text.replace('{playerName}', player.name);
+        textDisplay.innerHTML = `<p class="fade-in">${storyText}</p>`;
+        choicesDisplay.innerHTML = '';
 
-            // Apply fade-in animation
-            textDisplay.innerHTML = `<p class="fade-in">${storyText}</p>`;
-
-            // Clear and create choice buttons
-            choicesDisplay.innerHTML = '';
+        if (storyNode.choices) {
             storyNode.choices.forEach(choice => {
                 const button = document.createElement('button');
                 button.classList.add('nes-btn', 'is-primary');
                 button.innerText = choice.text;
-                button.addEventListener('click', () => selectChoice(choice));
+                button.addEventListener('click', () => {
+                    if (choice.destination) showStoryNode(choice.destination);
+                    if (choice.action) choice.action();
+                });
                 choicesDisplay.appendChild(button);
             });
         }
+    }
+
+    function updatePlayerStatsUI() {
+        statName.innerText = `Name: ${player.name || '???'}`;
+        statLevel.innerText = `Level: ${player.level || 1}`;
+        statHp.innerText = `HP: ${player.hp || '--'}/${player.maxHp || '--'}`;
+        playerXpBar.max = player.maxExp || 100;
+        playerXpBar.value = player.exp || 0;
+    }
+    
+    function logToCombat(message, color = 'white') {
+        combatLog.innerHTML += `<p style="color:${color};">${message}</p>`;
+        combatLog.scrollTop = combatLog.scrollHeight; // Auto-scroll
+    }
+
+    // --- COMBAT LOGIC ---
+    function startCombatSequence() {
+        enemyQueue = ['void_wretch', 'soul_reaver', 'fractured_demon', 'void_titan_boss'];
+        storyScreen.classList.add('hidden');
+        combatScreen.classList.remove('hidden');
+        windowTitle.innerText = "Combat";
+        loadNextEnemy();
+    }
+
+    function loadNextEnemy() {
+        if (enemyQueue.length === 0) {
+            gameWin();
+            return;
+        }
+        const enemyKey = enemyQueue.shift();
+        currentEnemy = { ...enemies[enemyKey], maxHp: enemies[enemyKey].hp };
         
-        /**
-         * Handles the player selecting a choice.
-         * @param {object} choice - The choice object that was clicked.
-         */
-        function selectChoice(choice) {
-            showStoryNode(choice.destination);
-        }
+        enemyName.innerText = currentEnemy.name;
+        enemyHpBar.max = currentEnemy.maxHp;
+        enemyHpBar.value = currentEnemy.hp;
+        
+        logToCombat(`A wild ${currentEnemy.name} appears!`, '#f7d51d');
+        setupPlayerActions();
+        isPlayerTurn = true;
+    }
 
-        /**
-         * Updates the player status display.
-         */
-        function updateStats() {
-            statName.innerText = `Name: ${player.name}`;
-            statHp.innerText = `HP: ${player.hp}/${player.maxHp}`;
-            statAffinity.innerText = `Affinity: ${player.affinity}`;
-        }
+    function setupPlayerActions() {
+        playerActions.innerHTML = '';
+        player.skills.forEach(skill => {
+            const button = document.createElement('button');
+            button.classList.add('nes-btn', 'is-success');
+            button.innerText = skill.name;
+            button.onclick = () => {
+                if(isPlayerTurn) playerTurn(skill);
+            };
+            playerActions.appendChild(button);
+        });
+    }
 
-        // --- INITIALIZE GAME ---
-        window.onload = () => {
-            showCharacterSelection();
-            updateStats(); // Initial stat display
-        };
+    function playerTurn(skill) {
+        isPlayerTurn = false;
+        const damage = Math.floor(player.attack * skill.damageMultiplier);
+        currentEnemy.hp = Math.max(0, currentEnemy.hp - damage);
+        
+        logToCombat(`${player.name} uses ${skill.name}! It deals ${damage} damage.`, '#209cee');
+        gameWindow.classList.add('shake');
+        setTimeout(() => gameWindow.classList.remove('shake'), 500);
+
+        enemyHpBar.value = currentEnemy.hp;
+
+        if (currentEnemy.hp <= 0) {
+            handleEnemyDefeat();
+        } else {
+            setTimeout(enemyTurn, 1000);
+        }
+    }
+
+    function enemyTurn() {
+        const damage = currentEnemy.attack;
+        player.hp = Math.max(0, player.hp - damage);
+        
+        logToCombat(`${currentEnemy.name} attacks! You take ${damage} damage.`, '#e53935');
+        updatePlayerStatsUI();
+
+        if (player.hp <= 0) {
+            gameOver();
+        } else {
+            isPlayerTurn = true;
+        }
+    }
+
+    function handleEnemyDefeat() {
+        logToCombat(`${currentEnemy.name} was defeated!`, '#92cc41');
+        gainExp(currentEnemy.exp);
+        setTimeout(loadNextEnemy, 2000);
+    }
+
+    function gainExp(amount) {
+        player.exp += amount;
+        logToCombat(`You gained ${amount} EXP!`, '#f7d51d');
+        if (player.exp >= player.maxExp) {
+            levelUp();
+        }
+        updatePlayerStatsUI();
+    }
+
+    function levelUp() {
+        player.level++;
+        player.exp -= player.maxExp;
+        player.maxExp = Math.floor(player.maxExp * 1.5); // Increase EXP needed for next level
+        player.maxHp += 10; // Increase max HP
+        player.hp = player.maxHp; // Full heal on level up
+        player.attack += 2; // Increase attack power
+
+        logToCombat(`LEVEL UP! You are now Level ${player.level}!`, '#f7d51d');
+        updatePlayerStatsUI();
+    }
+
+    function gameWin() {
+        combatScreen.classList.add('hidden');
+        storyScreen.classList.remove('hidden');
+        windowTitle.innerText = "Victory!";
+        showStoryNode('game_won');
+    }
+
+    function gameOver() {
+        combatScreen.classList.add('hidden');
+        storyScreen.classList.remove('hidden');
+        windowTitle.innerText = "Defeat...";
+        showStoryNode('game_over');
+    }
+
     </script>
 </body>
 </html>
