@@ -7,6 +7,8 @@
     
     <link href="https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/nes.css@latest/css/nes.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
 
     <style>
         /* --- General Styles --- */
@@ -22,20 +24,44 @@
         }
 
         .game-container {
-            max-width: 900px;
+            max-width: 720px;
             width: 100%;
+            transform: scale(0.95); /* Additional visual scaling */
+            transform-origin: center;
         }
         
         .game-title {
             text-align: center;
             margin-bottom: 2rem;
-            color: #f7d51d;
-            text-shadow: 3px 3px #e53935;
+            color: #006956;
+            text-shadow:
+                1px 1px 0 #55fee2,
+                2px 2px 0 #55fee2,
+                0 0 8px #006956;
+            letter-spacing: 1px;
+            animation: glowPulse 10s infinite ease-in-out;
+            font-size: 1.8rem;
         }
+            /* New pulsating glow animation */
+            @keyframes glowPulse {
+                0%, 100% {
+                    text-shadow: 
+                        1px 1px 0 #55fee2,
+                        2px 2px 0 #55fee2,
+                        0 0 8px #006956;
+                }
+                50% {
+                    text-shadow: 
+                        1px 1px 0 #55fee2,
+                        2px 2px 0 #55fee2,
+                        0 0 3px #00d9c0,
+                        0 0 6px #00d9c0;
+                }
+            }
 
         /* --- Screens & Displays --- */
         .text-display-container {
-            min-height: 250px;
+            min-height: 200px;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
         }
@@ -76,7 +102,7 @@
         #character-select-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 1.5rem;
+            gap: 1rem;
             padding: 1rem;
         }
 
@@ -422,6 +448,17 @@
         showStoryNode('game_over');
     }
 
+    window.addEventListener('load', () => {
+        // Fade and slide-in
+        anime({
+            targets: '.game-title',
+            opacity: [0, 1],
+            translateY: [-20, 0],
+            duration: 1500,
+            easing: 'easeOutExpo'
+        });
+
+    });
     </script>
 </body>
 </html>
