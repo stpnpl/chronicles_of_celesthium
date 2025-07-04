@@ -56,6 +56,7 @@ The major powers vying for control or survival in the multiverse.
     The Lost Nine: Nine forsaken champions from corrupted timelines who were thought to be destroyed. Their return is prophesied, but their allegiance is unknown.
 
 4. The Champions of Celesthium
+   
 Kael Vortex – Temporal Drift
 
     A cyber-augmented timebreaker from Virelai, tasked with restoring stability to the fractured timelines.
@@ -69,6 +70,7 @@ Kael Vortex – Temporal Drift
     Rewind Cascade: Unleashes a wave of reverse-time energy. Enemies hit have recent damage/buffs undone. Kael regains health based on the reversed damage.
 
     Paradox Field: Erects a distortion bubble where enemy actions are randomly sped up or slowed down.
+       
 
 Nyra Khaine – Redemption Blade
 
