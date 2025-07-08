@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chronicles of Celesthium</title>
+    
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/nes.css@latest/css/nes.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+
+    <style>
+        /* --- General Styles --- */
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background-color: #212529;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .game-container {
+            max-width: 720px;
+            width: 100%;
+            transform: scale(0.95); /* Additional visual scaling */
+            transform-origin: center;
+        }
+        
+        .game-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #006956;
+            text-shadow:
+                1px 1px 0 #55fee2,
+                2px 2px 0 #55fee2,
+                0 0 8px #006956;
+            letter-spacing: 1px;
+            animation: glowPulse 10s infinite ease-in-out;
+            font-size: 1.8rem;
+        }
+            /* New pulsating glow animation */
+            @keyframes glowPulse {
+                0%, 100% {
+                    text-shadow: 
+                        1px 1px 0 #55fee2,
+                        2px 2px 0 #55fee2,
+                        0 0 8px #006956;
+                }
+                50% {
+                    text-shadow: 
+                        1px 1px 0 #55fee2,
+                        2px 2px 0 #55fee2,
+                        0 0 3px #00d9c0,
+                        0 0 6px #00d9c0;
+                }
+            }
+
+        /* --- Screens & Displays --- */
+        .text-display-container {
+            min-height: 200px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .text-display-container p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out forwards;
+        }
+        
+        @keyframes screenShake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        .shake {
+            animation: screenShake 0.5s;
+        }
+
+        /* --- Character Selection --- */
+        #character-select-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .character-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s ease-out;
+        }
+
+        .character-card:hover {
+            transform: scale(1.1);
+            color: #f7d51d;
+        }
+
+        .character-card .nes-container {
+            padding: 0.25rem;
+            margin-bottom: 0.75rem;
+            image-rendering: pixelated;
+            background-color: #000;
+        }
+        
+        .character-card img { display: block; width: 100%; height: auto; }
+        .character-card-name { font-size: 0.8rem; text-transform: uppercase; }
+
+        /* --- Combat Screen --- */
+        #combat-screen { padding: 1rem; }
+        #enemy-display { text-align: center; margin-bottom: 1.5rem; }
+        #enemy-name { font-size: 1.2rem; margin-bottom: 0.5rem; color: #e53935; }
+        #player-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+        #combat-log { height: 100px; overflow-y: scroll; background-color: #343a40; padding: 0.5rem; border: 4px solid #fff; }
+        #combat-log p { margin: 0 0 0.5rem 0; font-size: 0.8rem; }
+
+        /* --- Player & Enemy Stats --- */
+        .stats-container .lists { background: transparent; padding-left: 0; }
+        .stats-container .lists li::before { content: ">"; }
+        .progress-bar-label { margin-bottom: 0.5rem; }
+
+        /* --- Utility --- */
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1 class="game-title">Chronicles of Celesthium</h1>
+
+        <!-- Main Game Window -->
+        <div id="game-window" class="nes-container with-title is-centered is-dark">
+            <p id="window-title" class="title">Select Your Champion</p>
+            
+            <div id="character-select-grid"></div>
+            
+            <div id="story-screen" class="hidden">
+                <div id="text-display" class="text-display-container"></div>
+                <div id="choices-display" class="choices-container"></div>
+            </div>
+
+            <div id="combat-screen" class="hidden">
+                <div id="enemy-display">
+                    <h3 id="enemy-name"></h3>
+                    <label for="enemy-hp-bar">HP</label>
+                    <progress id="enemy-hp-bar" class="nes-progress is-error" value="100" max="100"></progress>
+                </div>
+                <div id="player-actions"></div>
+                <div class="nes-container is-dark is-rounded">
+                    <div id="combat-log"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Player Status Window -->
+        <div id="player-stats" class="stats-container nes-container with-title is-dark">
+             <p class="title">Status</p>
+             <div class="lists">
+                 <ul class="nes-list is-circle">
+                    <li id="stat-name">Name: ???</li>
+                    <li id="stat-level">Level: 1</li>
+                    <li id="stat-hp">HP: --/--</li>
+                 </ul>
+             </div>
+             <label for="player-xp-bar">EXP</label>
+             <progress id="player-xp-bar" class="nes-progress is-primary" value="0" max="100"></progress>
+        </div>
+    </div>
+
+    <script>
+    // --- DOM ELEMENTS ---
+    const gameWindow = document.getElementById('game-window');
+    const windowTitle = document.getElementById('window-title');
+    const characterSelectGrid = document.getElementById('character-select-grid');
+    const storyScreen = document.getElementById('story-screen');
+    const combatScreen = document.getElementById('combat-screen');
+    const textDisplay = document.getElementById('text-display');
+    const choicesDisplay = document.getElementById('choices-display');
+    const playerActions = document.getElementById('player-actions');
+    const combatLog = document.getElementById('combat-log');
+    
+    // Player Stats
+    const statName = document.getElementById('stat-name');
+    const statLevel = document.getElementById('stat-level');
+    const statHp = document.getElementById('stat-hp');
+    const playerXpBar = document.getElementById('player-xp-bar');
+    
+    // Enemy Stats
+    const enemyName = document.getElementById('enemy-name');
+    const enemyHpBar = document.getElementById('enemy-hp-bar');
+
+    // --- GAME STATE ---
+    let player = {};
+    let currentEnemy = {};
+    let enemyQueue = [];
+    let isPlayerTurn = true;
+
+    // --- CHARACTER & ENEMY DATA ---
+    const characters = {
+        kael: { name: 'Kael Vortex', img: 'images/Kael_Vortex.png', affinity: 'Temporal', hp: 100, attack: 10, skills: [
+            { name: 'Time Strike', damageMultiplier: 1.5, description: 'A quick strike that warps time.' },
+            { name: 'Stasis Pulse', damageMultiplier: 1.2, description: 'A burst of energy that slows the enemy.' }
+        ]},
+        nyra: { name: 'Nyra Khaine', img: 'images/Nyra_Khaine.png', affinity: 'Redemption', hp: 120, attack: 8, skills: [
+            { name: 'Blade of Judgment', damageMultiplier: 1.8, description: 'A powerful slash with a blessed blade.' },
+            { name: 'Vindicating Slash', damageMultiplier: 1.4, description: 'A swift cut that restores resolve.' }
+        ]},
+        // Add other characters here for future expansion
+        riko: { name: 'Riko Blaze', img: 'images/Riko_Blaze.png', affinity: 'Neon Fury', hp: 90, attack: 12, skills: [] },
+    };
+
+    const enemies = {
+        void_wretch: { name: 'Void Wretch', hp: 30, attack: 5, exp: 100 },
+        soul_reaver: { name: 'Soul Reaver', hp: 35, attack: 7, exp: 120 },
+        fractured_demon: { name: 'Fractured Demon', hp: 40, attack: 9, exp: 150 },
+        void_titan_boss: { name: 'Void Titan', hp: 80, attack: 12, exp: 200 }
+    };
+
+    // --- STORY & GAME FLOW ---
+    const story = {
+        start: {
+            text: `A blinding flash of temporal energy subsides... "Welcome, {playerName}. Your journey begins now."`,
+            choices: [ { text: "Prepare for what's next.", destination: 'start_combat_intro' } ]
+        },
+        start_combat_intro: {
+            text: `The Loremaster points to a shimmering rift in reality. "The Null Expanse bleeds into our world. Creatures are pouring through. You must be our first line of defense! Go!"`,
+            choices: [ { text: "Enter the rift.", action: () => startCombatSequence() } ]
+        },
+        game_won: {
+            text: `With the Void Titan defeated, the rift collapses. You have proven yourself a true champion of Celesthium. Your legend has just begun.`,
+            choices: [ { text: "Restart", action: () => location.reload() } ]
+        },
+        game_over: {
+            text: `You have fallen in battle. The darkness of the Void consumes you. But in the fractured timelines of Celesthium, death is not always the end.`,
+            choices: [ { text: "Try Again", action: () => location.reload() } ]
+        }
+    };
+
+    // --- INITIALIZATION ---
+    window.onload = () => {
+        showCharacterSelection();
+        updatePlayerStatsUI();
+    };
+
+    function showCharacterSelection() {
+        characterSelectGrid.innerHTML = '';
+        // Only show Kael and Nyra for now
+        ['kael', 'nyra'].forEach(key => {
+            const char = characters[key];
+            const card = document.createElement('div');
+            card.className = 'character-card';
+            card.innerHTML = `
+                <div class="nes-container is-dark with-title">
+                    <img src="${char.img}" alt="${char.name}">
+                </div>
+                <p class="character-card-name">${char.name}</p>
+            `;
+            card.addEventListener('click', () => selectCharacter(key));
+            characterSelectGrid.appendChild(card);
+        });
+    }
+
+    function selectCharacter(charKey) {
+        const charData = characters[charKey];
+        player = {
+            ...charData,
+            level: 1,
+            exp: 0,
+            maxExp: 100,
+            maxHp: charData.hp
+        };
+        
+        characterSelectGrid.classList.add('hidden');
+        storyScreen.classList.remove('hidden');
+        
+        showStoryNode('start');
+        updatePlayerStatsUI();
+    }
+
+    // --- STORY & UI MANAGEMENT ---
+    function showStoryNode(nodeKey) {
+        const storyNode = story[nodeKey];
+        const storyText = storyNode.text.replace('{playerName}', player.name);
+
+        textDisplay.innerHTML = `<p class="fade-in">${storyText}</p>`;
+        choicesDisplay.innerHTML = '';
+
+        if (storyNode.choices) {
+            storyNode.choices.forEach(choice => {
+                const button = document.createElement('button');
+                button.classList.add('nes-btn', 'is-primary');
+                button.innerText = choice.text;
+                button.addEventListener('click', () => {
+                    if (choice.destination) showStoryNode(choice.destination);
+                    if (choice.action) choice.action();
+                });
+                choicesDisplay.appendChild(button);
+            });
+        }
+    }
+
+    function updatePlayerStatsUI() {
+        statName.innerText = `Name: ${player.name || '???'}`;
+        statLevel.innerText = `Level: ${player.level || 1}`;
+        statHp.innerText = `HP: ${player.hp || '--'}/${player.maxHp || '--'}`;
+        playerXpBar.max = player.maxExp || 100;
+        playerXpBar.value = player.exp || 0;
+    }
+    
+    function logToCombat(message, color = 'white') {
+        combatLog.innerHTML += `<p style="color:${color};">${message}</p>`;
+        combatLog.scrollTop = combatLog.scrollHeight; // Auto-scroll
+    }
+
+    // --- COMBAT LOGIC ---
+    function startCombatSequence() {
+        enemyQueue = ['void_wretch', 'soul_reaver', 'fractured_demon', 'void_titan_boss'];
+        storyScreen.classList.add('hidden');
+        combatScreen.classList.remove('hidden');
+        windowTitle.innerText = "Combat";
+        loadNextEnemy();
+    }
+
+    function loadNextEnemy() {
+        if (enemyQueue.length === 0) {
+            gameWin();
+            return;
+        }
+        const enemyKey = enemyQueue.shift();
+        currentEnemy = { ...enemies[enemyKey], maxHp: enemies[enemyKey].hp };
+        
+        enemyName.innerText = currentEnemy.name;
+        enemyHpBar.max = currentEnemy.maxHp;
+        enemyHpBar.value = currentEnemy.hp;
+        
+        logToCombat(`A wild ${currentEnemy.name} appears!`, '#f7d51d');
+        setupPlayerActions();
+        isPlayerTurn = true;
+    }
+
+    function setupPlayerActions() {
+        playerActions.innerHTML = '';
+        player.skills.forEach(skill => {
+            const button = document.createElement('button');
+            button.classList.add('nes-btn', 'is-success');
+            button.innerText = skill.name;
+            button.onclick = () => {
+                if(isPlayerTurn) playerTurn(skill);
+            };
+            playerActions.appendChild(button);
+        });
+    }
+
+    function playerTurn(skill) {
+        isPlayerTurn = false;
+        const damage = Math.floor(player.attack * skill.damageMultiplier);
+        currentEnemy.hp = Math.max(0, currentEnemy.hp - damage);
+        
+        logToCombat(`${player.name} uses ${skill.name}! It deals ${damage} damage.`, '#209cee');
+        gameWindow.classList.add('shake');
+        setTimeout(() => gameWindow.classList.remove('shake'), 500);
+
+        enemyHpBar.value = currentEnemy.hp;
+
+        if (currentEnemy.hp <= 0) {
+            handleEnemyDefeat();
+        } else {
+            setTimeout(enemyTurn, 1000);
+        }
+    }
+
+    function enemyTurn() {
+        const damage = currentEnemy.attack;
+        player.hp = Math.max(0, player.hp - damage);
+        
+        logToCombat(`${currentEnemy.name} attacks! You take ${damage} damage.`, '#e53935');
+        updatePlayerStatsUI();
+
+        if (player.hp <= 0) {
+            gameOver();
+        } else {
+            isPlayerTurn = true;
+        }
+    }
+
+    function handleEnemyDefeat() {
+        logToCombat(`${currentEnemy.name} was defeated!`, '#92cc41');
+        gainExp(currentEnemy.exp);
+        setTimeout(loadNextEnemy, 2000);
+    }
+
+    function gainExp(amount) {
+        player.exp += amount;
+        logToCombat(`You gained ${amount} EXP!`, '#f7d51d');
+        if (player.exp >= player.maxExp) {
+            levelUp();
+        }
+        updatePlayerStatsUI();
+    }
+
+    function levelUp() {
+        player.level++;
+        player.exp -= player.maxExp;
+        player.maxExp = Math.floor(player.maxExp * 1.5); // Increase EXP needed for next level
+        player.maxHp += 10; // Increase max HP
+        player.hp = player.maxHp; // Full heal on level up
+        player.attack += 2; // Increase attack power
+
+        logToCombat(`LEVEL UP! You are now Level ${player.level}!`, '#f7d51d');
+        updatePlayerStatsUI();
+    }
+
+    function gameWin() {
+        combatScreen.classList.add('hidden');
+        storyScreen.classList.remove('hidden');
+        windowTitle.innerText = "Victory!";
+        showStoryNode('game_won');
+    }
+
+    function gameOver() {
+        combatScreen.classList.add('hidden');
+        storyScreen.classList.remove('hidden');
+        windowTitle.innerText = "Defeat...";
+        showStoryNode('game_over');
+    }
+
+    window.addEventListener('load', () => {
+        // Fade and slide-in
+        anime({
+            targets: '.game-title',
+            opacity: [0, 1],
+            translateY: [-20, 0],
+            duration: 1500,
+            easing: 'easeOutExpo'
+        });
+
+    });
+    </script>
+</body>
+</html>
