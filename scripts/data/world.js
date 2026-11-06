@@ -1,0 +1,32 @@
+// Episode-specific dialogue and events; character identities and mythology originate in the lore bible.
+export const npcs = {
+ echo:{name:'Echo Rune',image:'Echo_Rune',role:'Resonance specialist',location:'refuge', dialogue:['The fracture is shaking Korr’s containment out of tune. I can stabilize it, but the dampener needs a resonance shard from the Fractured Approach.','The Iron Vow taught me how to exploit a rift. I would rather use what I know to keep someone alive.'], quest:'echo'},
+ korr:{name:'Korr Dravahn',image:'Korr_Dravahn',role:'The Hollowed-Goliath',location:'refuge',dialogue:['The casing holds. For now. Every tremor makes it harder to keep my thoughts my own.','Echo is tuning the dampeners. If you find what she needs, bring it back before the next surge.'],quest:'korr'},
+ riko:{name:'Riko Blaze',image:'Riko_Blaze',role:'Refuge defender',location:'refuge',dialogue:['I’m keeping the path clear for the people coming in. Want to test your footing before you go?','Don’t worry, it’s a training construct. Hit it like you mean it.'],quest:'training'},
+ kaen:{name:'Kaen Ryuji',image:'Kaen_Ryuji',role:'Solar-Forge monk',location:'refuge',dialogue:['The heat of a dying sun is a burden, not a trophy. I will hold this entrance while the displaced find shelter.','You need not carry every flame alone. Rest here before you return to the Verge.']},
+ mei:{name:'Mei Soryana',image:'Mei_Soryana',role:'The Blazing Orchid',location:'refuge',dialogue:['The families are safe behind the western wall. I’ll keep them moving if the ground shifts again.','A steady step matters more than a spectacular one when someone is counting on you.']},
+ hana:{name:'Hana Kurei',image:'Hana_Kurei',role:'Empress of Zantara · remote projection',location:'mirage',dialogue:['You see me through a mirage, not across a throne room. The psychic winds have carried a warning: the path ahead is not what it seems.','Look for the lantern that casts a shadow. Even an illusion can leave a truthful trace.']},
+ lira:{name:'Lira Valeska',image:'Lira_Valeska',role:'Aerial reconnaissance',location:'fractured',dialogue:['I mapped the broken route from above. There’s a stable ledge past the anomaly, and a resonance shard near the old relay.','The rift is pulling at my flight system. I’ll keep watch from here; you have the better chance on the ground.']},
+ thorn:{name:'Thorn Howl',image:'Thorn_Howl',role:'Hunter of Draelmoor',location:'fractured',dialogue:['The wolf spirits know the sound of broken ground. Follow the stones marked with claw scratches; the others will not hold.','There is something hunting near the relay. It is not of this land.']},
+ yorikai:{name:'Yorikai',image:'Yorikai',role:'Timeless guardian',location:'threshold',dialogue:['The Godforge Blade has watched ages pass. It has never made a choice for me. That burden belongs to the one who carries it.','Beyond this threshold stands a guardian twisted by the fracture. Defeat it, and we may seal this passage—not the whole of the Unmaker’s domain.']},
+ kael:{name:'Kael Vortex',image:'Kael_Vortex',role:'Temporal specialist',location:'refuge',dialogue:['My regulator is tracking the fracture. The readings make no sense, but the people caught in it are real enough.','I’ll hold the refuge’s anchor steady while you reach the threshold.']},
+ nyra:{name:'Nyra Khaine',image:'Nyra_Khaine',role:'Redemption Blade',location:'refuge',dialogue:['Vorpalis whispers that every threat must be cut down. I have learned not to listen to every whisper.','I’ll protect the refuge. You protect the path ahead.']},
+ shoryu:{name:'Shoryu Hayabusa',image:'Shoryu_Hayabusa',role:'Master of Storms',location:'refuge',dialogue:['The winds of two eras meet here. Listen carefully: even chaos has a rhythm.','The Hayabusa teach balance. I will hold this place while you face the fracture.']}
+};
+export const locations={
+ refuge:{name:'The Refuge',subtitle:'A LIGHT AGAINST THE DARK',description:'Lanterns flicker against weathered stone. Warriors from different eras shelter the displaced beneath a sky split by a luminous wound.',art:'refuge'},
+ fractured:{name:'Fractured Approach',subtitle:'WHERE TIME MISSTEPS',description:'Broken terraces overlap with the remains of a Virelai relay. Every few steps, the same distant thunder sounds again.',art:'fractured'},
+ mirage:{name:'Mirage Approach',subtitle:'THE PATH THAT SHIFTS',description:'Wind combs through half-seen arches. Lanterns float between stone and illusion, their shadows pointing toward solid ground.',art:'mirage'},
+ threshold:{name:'The Threshold',subtitle:'THE EDGE OF THE VOID',description:'A ruined ring of stone hangs over the abyss. Beyond it, the local fracture pulses around a figure in broken armor.',art:'threshold'}
+};
+export const enemies={
+ training:{name:'Training Construct',label:'SPARRING PARTNER',hp:52,attack:7,kind:'training',icon:'✦',intro:'Riko’s construct hums to life. A safe place to learn the rhythm of battle.'},
+ anomaly:{name:'Temporal Anomaly',label:'FRACTURED APPROACH',hp:85,attack:11,kind:'normal',icon:'◈',intro:'A knot of displaced time surges across the relay path.'},
+ wisp:{name:'Mirage Wisp',label:'MIRAGE APPROACH',hp:82,attack:10,kind:'normal',icon:'✧',intro:'An unstable shadow gathers among the lanterns.'},
+ guardian:{name:'Void Rift Guardian',label:'THE LOCAL THREAT',hp:150,attack:12,kind:'boss',icon:'♜',intro:'A guardian in fractured armor steps between you and the unstable passage.'}
+};
+export const reactions={
+ kael:{prologue:'My regulator is pulling toward the fracture. If I can hold on to this moment, perhaps others can too.',boss:'My regulator is failing—but this moment is still ours to defend.',ending:'The signal is steady. For now, this moment belongs to the people we saved.'},
+ nyra:{prologue:'Vorpalis hungers in my hand. This time, I choose what the blade is for.',boss:'Quiet, Vorpalis. I will decide when to strike.',ending:'Vorpalis still whispers. Today, I listened to the people who needed help instead.'},
+ shoryu:{prologue:'Two eras, one storm. Balance begins with the next step.',boss:'A storm has a rhythm. I will find the stillness between its strikes.',ending:'The winds have quieted here. There are many more storms to face.'}
+};
