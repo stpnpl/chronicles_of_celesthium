@@ -28,8 +28,20 @@ s=newRun('shoryu');beginBattle(s,'guardian');act(s,'ability',characters.shoryu.a
 // Defeat and retry restore the exact encounter checkpoint, including items.
 s=newRun('kael');s.player.hp=1;s.player.items=1;beginBattle(s,'guardian');act(s,'attack');assert.equal(s.player.hp,0);assert.ok(s.battle.over);retry(s);assert.equal(s.player.hp,1);assert.equal(s.player.items,1);assert.equal(s.battle.enemy.hp,enemies.guardian.hp);assert.equal(s.battle.turn,0);
 s=newRun('kael');beginBattle(s,'training');s.player.hp=20;let before=s.player.items;act(s,'item');assert.equal(s.player.items,before-1);assert.ok(s.player.hp>20);
+// Every champion can defeat the boss from full health without consumables, using their tactical tools.
+for (const [id,c] of Object.entries(characters)) {
+ const run=newRun(id);run.player.items=0;beginBattle(run,'guardian');
+ for(let i=0;!run.battle.over&&i<60;i++){
+  const tactical=id==='kael'?c.abilities[0]:c.abilities[1];
+  if(run.battle.turn%3===0)act(run,'guard');
+  else if(run.player.energy>=tactical.cost)act(run,'ability',tactical);
+  else act(run,'attack');
+ }
+ assert.ok(run.player.hp>0&&run.battle.enemy.hp===0,`${id} can win without items`);
+}
 // Inventory and local asset references.
 assert.equal(Object.keys(npcs).length,12);for(const n of Object.values(npcs)){assert.ok(existsSync(`images/${n.image}.png`));assert.ok(existsSync(`images/portraits/${n.image}.webp`));}
+for(const enemy of Object.values(enemies)){assert.ok(enemy.description && enemy.alt && enemy.image);assert.ok(existsSync(enemy.image));assert.doesNotMatch(enemy.image,/^https?:/);}
 for(const f of ['images/verge-landscape.jpg','images/void-guardian.jpg','styles/game.css','scripts/app.js'])assert.ok(existsSync(f));
 const html=readFileSync('index.html','utf8');assert.doesNotMatch(html,/https?:\/\//);for(const file of ['scripts/app.js','scripts/audio.js','scripts/state.js'])assert.doesNotMatch(readFileSync(file,'utf8'),/localStorage|indexedDB|https?:\/\//i);
 console.log('All combat, progression, quest, roster and local-asset checks passed.');
