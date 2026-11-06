@@ -8,3 +8,4 @@
 .enemy-art-fallback[hidden]{display:none}
 @media(max-width:600px){.enemy-art-frame{width:min(220px,65vw)}.battle-stage{padding:20px}}
 .retry-return{margin-top:10px;justify-content:center}
+.enemy-description{color:#c4d2d2;font-size:14px;margin:8px 0 14px}

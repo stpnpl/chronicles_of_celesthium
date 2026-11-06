@@ -25,3 +25,7 @@ The original two Node tests pass. A headless Chromium browser run (`tests/browse
 To rerun browser automation, serve the repository at `http://127.0.0.1:8000/`, install Playwright and Chromium **as development tools**, and run `node tests/browser.test.mjs`. Alternatively set `PLAYWRIGHT_MODULE` to the Playwright module URL and `CHROMIUM_PATH` to a compatible Chromium executable. These tools are not runtime dependencies.
 
 Metadata update was attempted but the GitHub integration returned HTTP 403; the repository description remains unchanged. No deployment was made by this polish branch.
+
+## Enemy roster revision
+
+The Temporal Anomaly and Mirage Wisp retain their original files and now serve as optional friendly companions. Five new hostile encounters are required to secure the two approaches. The revised Node tests cover route gating, each enemy's distinct behavior, companion barrier and retry, and all three champions. Automated Chromium runs cover all three full journeys and check every new battle image at 1440 × 900 and 390 × 844, with additional viewport smoke checks. The image and gameplay tests are automated: they do not establish a human completion time, rating, subjective difficulty, or physical-device behavior. A timed human playtest remains needed for the 15–30 minute target after the expanded encounters.

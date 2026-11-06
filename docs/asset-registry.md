@@ -23,13 +23,25 @@ All twelve can be reached in a single run: the selected champion is displayed in
 
 ## Enemy illustrations
 
-Four original AI-generated, family-friendly 16-bit-inspired encounter illustrations are stored as 1024 × 1024 PNG source images in `images/enemies/source/`. Browser delivery uses 700 × 700 WebP derivatives generated from those sources. Each is presented in its corresponding battle, with descriptive alt text and a text fallback if the image fails.
+Four original AI-generated, family-friendly 16-bit-inspired encounter illustrations are stored as 1024 × 1024 PNG source images in `images/enemies/source/`. Browser delivery uses 700 × 700 WebP derivatives generated from those sources. The training construct and Guardian appear in battle. The Temporal Anomaly and Mirage Wisp now appear as friendly interactable companions; their original files remain unchanged.
 
 | Encounter | Browser image | Source |
 |---|---|---|
 | Training Construct | `images/enemies/training-construct.webp` | `images/enemies/source/training-construct.png` |
-| Temporal Anomaly | `images/enemies/temporal-anomaly.webp` | `images/enemies/source/temporal-anomaly.png` |
-| Mirage Wisp | `images/enemies/mirage-wisp.webp` | `images/enemies/source/mirage-wisp.png` |
+| Friendly Temporal Anomaly | `images/enemies/temporal-anomaly.webp` | `images/enemies/source/temporal-anomaly.png` |
+| Friendly Mirage Wisp | `images/enemies/mirage-wisp.webp` | `images/enemies/source/mirage-wisp.png` |
 | Void Rift Guardian | `images/enemies/void-rift-guardian.webp` | `images/enemies/source/void-rift-guardian.png` |
 
 The earlier AI-generated `images/void-guardian.jpg` remains unchanged as an unused backup; it is no longer displayed in combat. `images/verge-landscape.jpg` and the original character PNGs remain unchanged. The enemy WebPs total approximately 407 KiB; they are loaded when their encounters render, not preloaded at startup.
+
+## Expanded hostile roster
+
+Five new AI-generated illustrations are original Episode I additions. Sources are retained in `images/enemies/source/` as 1024 × 1024 PNGs, with 700 × 700 WebP derivatives used in battle.
+
+| Encounter | Browser image | Source |
+|---|---|---|
+| Rift Hound | `images/enemies/rift-hound.webp` | `images/enemies/source/rift-hound.png` |
+| Shardback Boar | `images/enemies/shardback-boar.webp` | `images/enemies/source/shardback-boar.png` |
+| Voidborn Marauder | `images/enemies/voidborn-marauder.webp` | `images/enemies/source/voidborn-marauder.png` |
+| Bonebound Sentinel | `images/enemies/bonebound-sentinel.webp` | `images/enemies/source/bonebound-sentinel.png` |
+| Mirage Stalker | `images/enemies/mirage-stalker.webp` | `images/enemies/source/mirage-stalker.png` |
