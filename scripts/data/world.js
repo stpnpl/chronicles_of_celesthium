@@ -20,10 +20,10 @@ export const locations={
  threshold:{name:'The Threshold',subtitle:'THE EDGE OF THE VOID',description:'A ruined ring of stone hangs over the abyss. Beyond it, the local fracture pulses around a figure in broken armor.',art:'threshold'}
 };
 export const enemies={
- training:{name:'Training Construct',label:'SPARRING PARTNER',hp:52,attack:7,kind:'training',icon:'✦',intro:'Riko’s construct hums to life. A safe place to learn the rhythm of battle.'},
- anomaly:{name:'Temporal Anomaly',label:'FRACTURED APPROACH',hp:85,attack:11,kind:'normal',icon:'◈',intro:'A knot of displaced time surges across the relay path.'},
- wisp:{name:'Mirage Wisp',label:'MIRAGE APPROACH',hp:82,attack:10,kind:'normal',icon:'✧',intro:'An unstable shadow gathers among the lanterns.'},
- guardian:{name:'Void Rift Guardian',label:'THE LOCAL THREAT',hp:150,attack:12,kind:'boss',icon:'♜',intro:'A guardian in fractured armor steps between you and the unstable passage.'}
+ training:{name:'Training Construct',label:'SPARRING PARTNER',hp:52,attack:7,kind:'training',image:'images/enemies/training-construct.webp',alt:'A friendly bronze and wood training automaton with a glowing teal core',description:'Riko’s friendly sparring automaton.',intro:'Riko’s construct hums to life. A safe place to learn the rhythm of battle.'},
+ anomaly:{name:'Temporal Anomaly',label:'FRACTURED APPROACH',hp:85,attack:11,kind:'normal',image:'images/enemies/temporal-anomaly.webp',alt:'A floating teal time creature surrounded by glowing clockwork rings',description:'A whimsical creature formed by unstable time.',intro:'A knot of displaced time surges across the relay path.'},
+ wisp:{name:'Mirage Wisp',label:'MIRAGE APPROACH',hp:82,attack:10,kind:'normal',image:'images/enemies/mirage-wisp.webp',alt:'A smiling luminous spirit with flowing purple and turquoise ribbons',description:'A playful spirit caught in the shifting mirage.',intro:'A shimmering spirit gathers among the lanterns.'},
+ guardian:{name:'Void Rift Guardian',label:'THE LOCAL THREAT',hp:150,attack:12,kind:'boss',image:'images/enemies/void-rift-guardian.webp',alt:'A majestic stone-armored sentinel with glowing teal and purple crystals',description:'An ancient guardian destabilized by the local fracture.',intro:'A guardian in fractured armor steps between you and the unstable passage.'}
 };
 export const reactions={
  kael:{prologue:'My regulator is pulling toward the fracture. If I can hold on to this moment, perhaps others can too.',boss:'My regulator is failing—but this moment is still ours to defend.',ending:'The signal is steady. For now, this moment belongs to the people we saved.'},
