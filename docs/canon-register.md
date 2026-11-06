@@ -7,3 +7,5 @@ The root `README.md` is the lore bible. `chronicles-celesthium-starting-timeline
 The refuge and its local fracture, the route encounters, the training construct, the shard and containment incident, the characters' conversations and their actions during this episode, the Void Rift Guardian as a local antagonist, the local sealing and character-specific reactions are episode-specific story material. The Guardian is not the Unmaker and its defeat does not end the wider crisis. Mechanical interpretations of named abilities and all combat values are game design, not declarations of lore.
 
 Phase III is the approved placement. The episode does not resolve the unspecified relationship between the planetary timelines and the realms, the Source Codex's present whereabouts, or the ultimate fate of the Unmaker. Character appearances do not establish unrecorded personal histories or permanent relationships.
+
+The friendly Temporal Anomaly and Mirage Wisp, the Rift Hound, Shardback Boar, Voidborn Marauder, Bonebound Sentinel and Mirage Stalker, and their local encounter behaviors are Episode I additions. They do not establish permanent species histories or a new orc race.

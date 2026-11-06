@@ -3,7 +3,7 @@
 **Status:** implemented episode-specific additions; not a replacement for the established lore bible.
 
 ## Overview
-A compact, single-player, portrait-led RPG in Phase III's Convergence. A chosen champion helps defend a refuge in the Shattered Verge, clears the Fractured and Mirage approaches, then defeats the Void Rift Guardian and stabilizes one local passage. The Unmaker and wider conflict remain unresolved. The target is a 15–30 minute first playthrough, not yet validated by timed human playtesting.
+A compact, single-player, portrait-led RPG in Phase III's Convergence. A chosen champion helps defend a refuge in the Shattered Verge, clears the Fractured and Mirage approaches, clears five distinct route encounters, then defeats the Void Rift Guardian and stabilizes one local passage. The Unmaker and wider conflict remain unresolved. The target is a 15–30 minute first playthrough, not yet validated by timed human playtesting.
 
 ## Flow
 Title → Kael/Nyra/Shoryu selection → prologue → refuge and Riko's tutorial → two approaches in either order → Yorikai and threshold → Guardian → ending. The optional Echo and Korr containment quest runs alongside the main route. A shard at the relay can be collected before talking to Echo. Recovery is available at the refuge; victory also recovers some health and energy. Players can retry an encounter from its in-memory checkpoint.
@@ -16,3 +16,5 @@ Location-based exploration uses semantic controls, dialogue portraits, a journal
 
 ## Future
 Further locations, episodes, combat techniques and portraits can be added as data and scenes after narrative review. Real-time tile movement, parties, economies and persistence are outside this episode.
+
+The Temporal Anomaly and Mirage Wisp are friendly Episode I companions, not enemy species or additions to established canon.
